@@ -1,0 +1,22 @@
+# smad4
+R-script
+##download link# https://portal.gdc.cancer.gov/repository
+dir.create("data_in_one")
+for (dirname in dir("rawdata/")){  
+  file <- list.files(paste0(getwd(),"/rawdata/",dirname),pattern = "*.counts") 
+  file.copy(paste0(getwd(),"/rawdata/",dirname,"/",file),"data_in_one")
+  }
+  
+dir.create("rawcounts")
+metadata <- jsonlite::fromJSON("metadata.cart.json")
+require(dplyr)
+metadata_id <- metadata %>% 
+dplyr::select(c(file_name,associated_entities)) 
+metadata_id$associated_entities[[1]]$entity_submitter_id
+naid_df <- data.frame()
+for (i in 1:nrow(metadata)){
+  naid_df[i,1] <- substr(metadata_id$file_name[i],1,nchar(metadata_id$file_name[i])-3)
+  naid_df[i,2] <- metadata_id$associated_entities[i][[1]]$entity_submitter_id
+}
+
+colnames(naid_df) <- c("filename","TCGA_id")
